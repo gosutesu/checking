@@ -1,0 +1,19 @@
+parser: '@typescript-eslint/parser'
+plugins:
+  - '@typescript-eslint'
+  - prettier
+extends:
+  - 'eslint:recommended'
+  - 'plugin:@typescript-eslint/recommended'
+  - 'plugin:prettier/recommended'
+env:
+  es6: true
+  node: true
+rules:
+  # カスタムルールを必要に応じて追加
+  # 例: セミコロンを強制
+  semi: ['error', 'always']
+  # console.logを許可
+  'no-console': 'off'
+  # Prettierのルールを有効化
+  'prettier/prettier': 'error'
