@@ -2,17 +2,16 @@ import { glob } from 'glob';
 import { getPackageJson, PackageJson } from '../lib/package.js';
 import { PackageInfo } from '../lib/types.js';
 
-export const getDependenciesStep = async (rootDir: string): Promise<Array<PackageInfo>> => {
+export const getDependenciesStep = async (rootDir: string, packageJson: PackageJson): Promise<Array<PackageInfo>> => {
   const originPackages: Array<PackageInfo> = [];
   const selfPackage: Array<string> = [];
 
-  const rootPackageJson = await getPackageJson(rootDir);
-  selfPackage.push(rootPackageJson.name);
-  originPackages.push(...getDependenciesAndDevDependencies(rootPackageJson));
-  if (rootPackageJson.workspaces) {
+  selfPackage.push(packageJson.name);
+  originPackages.push(...getDependenciesAndDevDependencies(packageJson));
+  if (packageJson.workspaces) {
     // workspaceのpackage.jsonのパスを一覧で取得しています
     const workspaces = (
-      await Promise.all(rootPackageJson.workspaces.map((workspace) => glob(`${rootDir}/${workspace}/package.json`)))
+      await Promise.all(packageJson.workspaces.map((workspace) => glob(`${rootDir}/${workspace}/package.json`)))
     ).flat();
 
     for (const workspace of workspaces) {
@@ -25,7 +24,7 @@ export const getDependenciesStep = async (rootDir: string): Promise<Array<Packag
     .filter((i) => !selfPackage.includes(i.name)) // 自前のパッケージを除外
     .filter(
       (element, index, arr) =>
-        arr.findIndex((item) => item.name === element.name && item.current === element.current) === index
+        arr.findIndex((item) => item.name === element.name && item.current === element.current) === index,
     )
     .sort((a, b) => a.name.localeCompare(b.name));
   return filteredPackages;

@@ -51,7 +51,11 @@ const createPackageSection = (pkg: PackageInfoWithUpdate) => ({
   },
 });
 
-export const notifySlackStep = async (config: Config, packages: Array<PackageInfoWithUpdate>): Promise<void> => {
+export const notifySlackStep = async (
+  config: Config,
+  name: string,
+  packages: Array<PackageInfoWithUpdate>,
+): Promise<void> => {
   const webhook = new IncomingWebhook(config.webhookUrl);
 
   if (packages.length === 0) {
@@ -80,7 +84,7 @@ export const notifySlackStep = async (config: Config, packages: Array<PackageInf
     blocks.push(
       createUpdateTypeSection('MAJOR', '🔴'),
       ...majorUpdates.map(createPackageSection),
-      createDividerBlock()
+      createDividerBlock(),
     );
   }
 
@@ -88,7 +92,7 @@ export const notifySlackStep = async (config: Config, packages: Array<PackageInf
     blocks.push(
       createUpdateTypeSection('MINOR', '🟡'),
       ...minorUpdates.map(createPackageSection),
-      createDividerBlock()
+      createDividerBlock(),
     );
   }
 
@@ -96,7 +100,7 @@ export const notifySlackStep = async (config: Config, packages: Array<PackageInf
     blocks.push(
       createUpdateTypeSection('PATCH', '🟢'),
       ...patchUpdates.map(createPackageSection),
-      createDividerBlock()
+      createDividerBlock(),
     );
   }
 
