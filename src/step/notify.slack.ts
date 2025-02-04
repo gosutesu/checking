@@ -2,11 +2,11 @@ import { IncomingWebhook } from '@slack/webhook';
 import { Config } from '../lib/schema.js';
 import { PackageInfoWithUpdate } from '../lib/types.js';
 
-const createHeaderBlock = () => ({
+const createHeaderBlock = (name: string) => ({
   type: 'header',
   text: {
     type: 'plain_text',
-    text: '📦 パッケージアップデート通知',
+    text: `📦 ${name} パッケージアップデート通知`,
     emoji: true,
   },
 });
@@ -61,7 +61,7 @@ export const notifySlackStep = async (
   if (packages.length === 0) {
     await webhook.send({
       blocks: [
-        createHeaderBlock(),
+        createHeaderBlock(name),
         {
           type: 'section',
           text: {
@@ -78,7 +78,7 @@ export const notifySlackStep = async (
   const minorUpdates = packages.filter((pkg) => pkg.update === 'minor');
   const patchUpdates = packages.filter((pkg) => pkg.update === 'patch');
 
-  const blocks = [createHeaderBlock(), createContextBlock(packages.length), createDividerBlock()];
+  const blocks = [createHeaderBlock(name), createContextBlock(packages.length), createDividerBlock()];
 
   if (majorUpdates.length > 0) {
     blocks.push(
