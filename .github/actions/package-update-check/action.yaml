@@ -1,0 +1,31 @@
+name: 'Package Update Check'
+description: 'Check for package updates and notify to Slack'
+
+inputs:
+  webhook-url:
+    description: 'Slack webhook URL'
+    required: true
+  target-dir:
+    description: 'Target directory to check'
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+        cache: 'npm'
+
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+
+    - name: Build
+      shell: bash
+      run: npm run build
+
+    - name: Run check
+      shell: bash
+      run: npm run start -- --webhook-url "${{ inputs.webhook-url }}" --target-dir "${{ inputs.target-dir }}"
