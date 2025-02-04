@@ -1,0 +1,40 @@
+name: Notify package update
+on:
+  schedule:
+    # JST AM 8
+    - cron: '0 23 * * *'
+  workflow_dispatch: {}
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Run check
+        run: npm run start -- --webhook-url "${{ env.SLACK_WEBHOOK_URL }}" --target-dir "${{ github.workspace }}"
